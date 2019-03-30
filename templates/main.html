@@ -13,51 +13,108 @@
 </head>
 <body>
 <div class="container">
-    <h1>To-do's</h1>
-    <ul class="list-group">
-        <li class="list-group-item"><input type="text" class="form-control" placeholder="I need to..."></li>
-        <li class="list-group-item list-group-item-action">
-            <span class="subject">
-                <span class="js-text"> subject </span>
-                <input type="text" class="js-input form-control" style="display: none;">
-            </span>
-        </li>
-        <li class="list-group-item">Dapibus ac facilisis in</li>
-        <li class="list-group-item">Morbi leo risus</li>
-        <li class="list-group-item">Porta ac consectetur ac</li>
-        <li class="list-group-item">Vestibulum at eros</li>
-    </ul>
+    <div class="row">
+        <div class="col-3">
+            <h1 class="pb-2">To-do's</h1>
+
+        </div>
+    </div>
+    <div class="row align-items-center pb-4">
+        <div class="col-auto">
+            Sort
+        </div>
+        <div class="col">
+            <div class="btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" checked autocomplete="off"> alphabetically
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" checked autocomplete="off"> by priority
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" checked autocomplete="off"> by date created
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form method="post" action="{% url 'main:create' %}">
+                <ul class="list-group">
+                    {% csrf_token %}
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-10">
+                                {{ input_form.name }}
+                            </div>
+                            <div class="col">
+                                {{ input_form.priority }}
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </form>
+            <form id="id_task-form" method="post" action="{% url "main:list" %}">
+                <ul class="list-group">
+                    {% csrf_token %}
+                    {{ task_forms.management_form }}
+                    {% for task_form in task_forms %}
+                        <li class="list-group-item list-group-item-action">
+                            <div class="row">
+                                {{ task_form.id }}
+                                <div class="col-10">
+                                    {{ task_form.name }}
+                                </div>
+                                <div class="col">
+                                    {{ task_form.priority }}
+                                </div>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">There are no tasks yet. Add something</li>
+                    {% endfor %}
+                </ul>
+            </form>
+        </div>
+    </div>
 </div>
-
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+{% include "js-inclusions.html" %}
 <script>
-    function showInput() {
-        $(this).off('click');
-        $(this).siblings('input').each(function () {
-            $(this).show();
+    $(document).ready(function () {
+        $("#id_task-form").change(function (event) {
+            let data = $(this).serialize();
+            $.ajax({
+                url: this.action,
+                method: "POST",
+                data: data,
+                success: function (data) {
+                    console.log(data);
+                }
+            });
         });
-        $(this).siblings('input').focus();
-        $(this).hide();
-    }
 
-    function hideInput() {
-        $(this).hide();
-        $(this).siblings('span').show();
-        $(this).siblings('span').click(showInput);
-    }
 
-    $(function () {
-        $('.js-text').click(showInput);
-        $('.js-input').blur(hideInput);
-    })
+        function toggle_bg(element, name) {
+            element
+                .removeClass()
+                .addClass("form-control " + name);
+            if (name) element.addClass("text-white");
+        }
+
+        let paint = function (event) {
+
+            let $element = $(this);
+            let backgrounds = {
+                0: "bg-success",
+                2: "bg-warning",
+                3: "bg-danger"
+            };
+            toggle_bg($element, backgrounds[$element.val()]);
+        };
+
+        $("select").each(paint);
+        $("select").on("change", paint);
+    });
 </script>
 </body>
 </html>
