@@ -39,9 +39,9 @@
     </div>
     <div class="row">
         <div class="col">
-            <form method="post" action="{% url 'main:create' %}">
+            <form method="post" action="{% url 'main:create' %}" class="pb-4">
+                {% csrf_token %}
                 <ul class="list-group">
-                    {% csrf_token %}
                     <li class="list-group-item">
                         <div class="row">
                             <div class="col-10">
@@ -55,9 +55,9 @@
                 </ul>
             </form>
             <form id="id_task-form" method="post" action="{% url "main:list" %}">
+                {% csrf_token %}
+                {{ task_forms.management_form }}
                 <ul class="list-group">
-                    {% csrf_token %}
-                    {{ task_forms.management_form }}
                     {% for task_form in task_forms %}
                         <li class="list-group-item list-group-item-action">
                             <div class="row individual-form">
@@ -89,6 +89,13 @@
             $(this).hide();
         });
         feather.replace();
+
+        $("#id_task-form").keypress(function (e) {
+            //Enter key
+            if (e.which === 13) {
+                return false;
+            }
+        });
 
         $("#id_task-form").change(function (event) {
             let data = $(this).serialize();
