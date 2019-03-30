@@ -14,5 +14,6 @@ TaskFormset = forms.modelformset_factory(model=models.Task,
                                          form=TaskForm,
                                          extra=0,
                                          fields=TaskForm.Meta.fields,
+                                         can_delete=True,
                                          widgets={"name": forms.TextInput({"class": "form-control-plaintext"}),
                                                   "priority": forms.Select({"class": "form-control"})})

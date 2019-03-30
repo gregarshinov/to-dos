@@ -60,13 +60,17 @@
                     {{ task_forms.management_form }}
                     {% for task_form in task_forms %}
                         <li class="list-group-item list-group-item-action">
-                            <div class="row">
+                            <div class="row individual-form">
                                 {{ task_form.id }}
-                                <div class="col-10">
+                                <div class="col-9">
                                     {{ task_form.name }}
                                 </div>
                                 <div class="col">
                                     {{ task_form.priority }}
+                                </div>
+                                <div class="col text-center">
+                                    <button class="btn btn-danger js-delete-item"><span data-feather="trash"></span></button>
+                                    {{ task_form.DELETE }}
                                 </div>
                             </div>
                         </li>
@@ -81,6 +85,11 @@
 {% include "js-inclusions.html" %}
 <script>
     $(document).ready(function () {
+        $(".individual-form > div > input[type=checkbox]").each(function () {
+            $(this).hide();
+        });
+        feather.replace();
+
         $("#id_task-form").change(function (event) {
             let data = $(this).serialize();
             $.ajax({
@@ -88,7 +97,7 @@
                 method: "POST",
                 data: data,
                 success: function (data) {
-                    console.log(data);
+                    console.log(data)
                 }
             });
         });
@@ -114,6 +123,13 @@
 
         $("select").each(paint);
         $("select").on("change", paint);
+        $(".js-delete-item").click(function (event) {
+            event.preventDefault();
+            $(this).next("input[type='checkbox']").prop("checked", true);
+            $("#id_task-form").trigger("change");
+            $(this).parents("li").remove();
+
+        });
     });
 </script>
 </body>
