@@ -7,7 +7,7 @@ class TaskForm(forms.ModelForm):
         model = models.Task
         fields = ("name", "priority")
         widgets = {"name": forms.TextInput({"class": "form-control", "placeholder": "I need to..."}),
-                   "priority": forms.Select({"class": "form-control"})}
+                   "priority": forms.Select({"class": "custom-select"})}
 
 
 TaskFormset = forms.modelformset_factory(model=models.Task,

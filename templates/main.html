@@ -13,28 +13,9 @@
 </head>
 <body>
 <div class="container">
-    <div class="row">
-        <div class="col-3">
-            <h1 class="pb-2">To-do's</h1>
-
-        </div>
-    </div>
-    <div class="row align-items-center pb-4">
-        <div class="col-auto">
-            Sort
-        </div>
+    <div class="row pt-4">
         <div class="col">
-            <div class="btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-outline-primary">
-                    <input type="checkbox" checked autocomplete="off"> alphabetically
-                </label>
-                <label class="btn btn-outline-primary">
-                    <input type="checkbox" checked autocomplete="off"> by priority
-                </label>
-                <label class="btn btn-outline-primary">
-                    <input type="checkbox" checked autocomplete="off"> by date created
-                </label>
-            </div>
+            <h1 class="pb-2">To-dos</h1>
         </div>
     </div>
     <div class="row">
@@ -43,33 +24,58 @@
                 {% csrf_token %}
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-10">
+                        <div class="form-row">
+                            <div class="col-md-8 pb-2 pb-md-0">
                                 {{ input_form.name }}
                             </div>
-                            <div class="col">
+                            <div class="col input-group">
                                 {{ input_form.priority }}
+                                <div class="input-group-append">
+                                    <input type="submit" class="btn btn-outline-success" value="Create">
+                                </div>
                             </div>
                         </div>
                     </li>
                 </ul>
             </form>
+            <div class="row pb-4">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> Sort </span>
+                        </div>
+                        <select class="custom-select">
+                            <option value="name">alphabetically</option>
+                            <option value="priority">by priority</option>
+                            <option value="date_created">by date created</option>
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary js-sort-btn" data-ordering="asc" type="button" data-toggle="tooltip" data-placement="top" title="Ascending order">
+                                <span>↑</span></button>
+                            <button class="btn btn-outline-secondary js-sort-btn" data-ordering="desc" type="button" data-toggle="tooltip" data-placement="top" title="Descending order">↓
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <section>
             <form id="id_task-form" method="post" action="{% url "main:list" %}">
                 {% csrf_token %}
                 {{ task_forms.management_form }}
                 <ul class="list-group">
                     {% for task_form in task_forms %}
                         <li class="list-group-item list-group-item-action">
-                            <div class="row individual-form">
+                            <div class="form-row individual-form">
                                 {{ task_form.id }}
-                                <div class="col-9">
+                                <div class="col-md-9">
                                     {{ task_form.name }}
+                                    <small>Added on {{ task_form.instance.date_created }}</small>
                                 </div>
-                                <div class="col">
+                                <div class="col-md">
                                     {{ task_form.priority }}
                                 </div>
-                                <div class="col text-center">
-                                    <button class="btn btn-danger js-delete-item"><span data-feather="trash"></span></button>
+                                <div class="col-md-auto justify-content-end">
+                                    <button class="btn btn-outline-secondary js-delete-item"><span data-feather="trash-2"></span></button>
                                     {{ task_form.DELETE }}
                                 </div>
                             </div>
@@ -79,26 +85,29 @@
                     {% endfor %}
                 </ul>
             </form>
+            </section>
         </div>
     </div>
 </div>
 {% include "js-inclusions.html" %}
 <script>
-    $(document).ready(function () {
+    function initialize() {
         $(".individual-form > div > input[type=checkbox]").each(function () {
             $(this).hide();
         });
         feather.replace();
 
-        $("#id_task-form").keypress(function (e) {
+        let $id_task_form = $("#id_task-form");
+        $id_task_form.keypress(function (e) {
             //Enter key
             if (e.which === 13) {
                 return false;
             }
         });
 
-        $("#id_task-form").change(function (event) {
+        $("body").on("change", "#id_task-form", function (event) {
             let data = $(this).serialize();
+            console.log(data);
             $.ajax({
                 url: this.action,
                 method: "POST",
@@ -128,14 +137,29 @@
             toggle_bg($element, backgrounds[$element.val()]);
         };
 
-        $("select").each(paint);
-        $("select").on("change", paint);
+        $(".individual-form > div > select").each(paint);
+        $("body").on("change", ".individual-form > div > select", paint);
         $(".js-delete-item").click(function (event) {
             event.preventDefault();
             $(this).next("input[type='checkbox']").prop("checked", true);
             $("#id_task-form").trigger("change");
-            $(this).parents("li").remove();
+            {#$(this).parents("li").remove();#}
+            let $parent_li = $(this).parents("li");
+            $parent_li.fadeOut('slow');
 
+        });
+
+
+    }
+    $(document).ready(function () {
+        initialize();
+        $(".js-sort-btn").click(function (event) {
+            event.preventDefault();
+            let params = $.param({
+                field_name: $(this).parent().prev().val(),
+                ordering: $(this).data("ordering")
+            });
+            $("section").load("/?" + params + " #id_task-form", initialize);
         });
     });
 </script>
