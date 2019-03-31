@@ -2,7 +2,7 @@
 A simple Django todo app
 
 
-![Interface](https://i.ibb.co/SJ3kGRs/Screenshot-2019-03-31-at-19-17-35.png)
+![Imgur](https://i.imgur.com/ZBQuIUo.png)
 
 
 ## Usage
