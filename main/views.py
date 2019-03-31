@@ -22,8 +22,12 @@ def manage_todos(request):
         queryset = models.Task.objects.all()
     task_forms = forms.TaskFormset(queryset=queryset)
     input_form = forms.TaskForm(initial={"priority": 1})  # normal
+    fields = None
+    if len(task_forms) > 0:
+        fields = task_forms[0].instance.fields_verbose
     return render(request, 'main.html', {"task_forms": task_forms,
-                                         "input_form": input_form})
+                                         "input_form": input_form,
+                                         "fields": fields})
 
 
 def create_todo(request):

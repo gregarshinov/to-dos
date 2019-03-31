@@ -38,16 +38,17 @@
                     </li>
                 </ul>
             </form>
+            {% if fields %}
             <div class="row pb-4">
-                <div class="col-md-5">
+                <div class="col-md-6 col-lg-4">
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text"> Sort </span>
+                            <span class="input-group-text"> Sort by </span>
                         </div>
                         <select class="custom-select">
-                            <option value="name">alphabetically</option>
-                            <option value="priority">by priority</option>
-                            <option value="date_created">by date created</option>
+                            {% for name, verbose_name in fields.items %}
+                                <option value="{{ name }}">{{ verbose_name }}</option>
+                            {% endfor %}
                         </select>
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary js-sort-btn" data-ordering="asc" type="button" data-toggle="tooltip" data-placement="top" title="Ascending order">
@@ -58,6 +59,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
             <section>
             <form id="id_task-form" method="post" action="{% url "main:list" %}">
                 {% csrf_token %}
@@ -69,13 +71,13 @@
                                 {{ task_form.id }}
                                 <div class="col-md-9">
                                     {{ task_form.name }}
-                                    <small>Added on {{ task_form.instance.date_created }}</small>
+                                    <small>#{{ task_form.instance.id }} Added on {{ task_form.instance.date_created }}</small>
                                 </div>
-                                <div class="col-md">
+                                <div class="col col-md-2">
                                     {{ task_form.priority }}
                                 </div>
-                                <div class="col-md-auto justify-content-end">
-                                    <button class="btn btn-outline-secondary js-delete-item"><span data-feather="trash-2"></span></button>
+                                <div class="col col-md-1">
+                                    <button class="btn btn-outline-secondary js-delete-item d-flex float-right"><span data-feather="trash-2"></span></button>
                                     {{ task_form.DELETE }}
                                 </div>
                             </div>
