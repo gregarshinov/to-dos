@@ -1,6 +1,10 @@
 # to-dos
 A simple Django todo app
 
+
+![Interface](https://i.ibb.co/SJ3kGRs/Screenshot-2019-03-31-at-19-17-35.png)
+
+
 ## Usage
 
 * To create a task click on the "I need to..." field and type in your task description. Note, that maximum number of charachters
