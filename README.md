@@ -2,7 +2,7 @@
 A simple Django todo app
 
 
-![Imgur](https://i.imgur.com/ZBQuIUo.png)
+![Imgur](https://i.imgur.com/YavreU6.png)
 
 
 ## Usage
